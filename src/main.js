@@ -1,3 +1,11 @@
+/*
+ * @Author: your name
+ * @Date: 2020-04-29 14:03:57
+ * @LastEditTime: 2020-04-30 02:08:31
+ * @LastEditors: your name
+ * @Description: In User Settings Edit
+ * @FilePath: \vue-cms\vue-cms-admin\src\main.js
+ */
 import Vue from 'vue'
 
 import 'normalize.css/normalize.css' // A modern alternative to CSS resets
@@ -5,6 +13,8 @@ import 'normalize.css/normalize.css' // A modern alternative to CSS resets
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 import locale from 'element-ui/lib/locale/lang/en' // lang i18n
+
+import './styles/element-variables.scss'
 
 import '@/styles/index.scss' // global css
 
