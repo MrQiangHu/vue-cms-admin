@@ -1,3 +1,11 @@
+/*
+ * @Author: your name
+ * @Date: 2020-04-29 14:03:57
+ * @LastEditTime: 2020-05-07 16:14:08
+ * @LastEditors: Please set LastEditors
+ * @Description: In User Settings Edit
+ * @FilePath: \vue-cms\vue-cms-admin\src\store\modules\app.js
+ */
 import Cookies from 'js-cookie'
 
 const state = {
@@ -5,7 +13,9 @@ const state = {
     opened: Cookies.get('sidebarStatus') ? !!+Cookies.get('sidebarStatus') : true,
     withoutAnimation: false
   },
-  device: 'desktop'
+  device: 'desktop',
+  // size尺寸选择
+  size: Cookies.get('size') || 'medium'
 }
 
 const mutations = {
@@ -25,6 +35,10 @@ const mutations = {
   },
   TOGGLE_DEVICE: (state, device) => {
     state.device = device
+  },
+  SET_SIZE: (state, size) => {
+    state.size = size
+    Cookies.set('size', size)
   }
 }
 
@@ -37,6 +51,9 @@ const actions = {
   },
   toggleDevice({ commit }, device) {
     commit('TOGGLE_DEVICE', device)
+  },
+  setSize({ commit }, size) {
+    commit('SET_SIZE', size)
   }
 }
 

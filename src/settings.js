@@ -1,8 +1,8 @@
 /*
  * @Author: your name
  * @Date: 2020-04-29 14:03:57
- * @LastEditTime: 2020-04-30 02:11:33
- * @LastEditors: your name
+ * @LastEditTime: 2020-05-06 16:17:18
+ * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \vue-cms\vue-cms-admin\src\settings.js
  */
@@ -39,5 +39,5 @@ module.exports = {
    * The default is only used in the production env
    * If you want to also use it in dev, you can pass ['production', 'development']
    */
-  errorLog: 'production'
+  errorLog: ['production', 'development']
 }

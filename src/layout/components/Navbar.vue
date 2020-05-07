@@ -5,7 +5,15 @@
     <breadcrumb class="breadcrumb-container" />
 
     <div class="right-menu">
-      <el-dropdown class="avatar-container" trigger="click">
+      <search id="header-search" class="right-menu-item" />
+
+      <error-log class="errLog-container right-menu-item hover-effect" />
+
+      <screenfull id="screenfull" class="right-menu-item hover-effect" />
+      <el-tooltip content="布局大小" effect="dark" placement="bottom">
+        <size-select id="size-select" class="right-menu-item hover-effect" />
+      </el-tooltip>
+      <el-dropdown class="avatar-container right-menu-item hover-effect" trigger="click">
         <div class="avatar-wrapper">
           <img :src="avatar+'?imageView2/1/w/80/h/80'" class="user-avatar">
           <i class="el-icon-caret-bottom" />
@@ -35,11 +43,18 @@
 import { mapGetters } from 'vuex'
 import Breadcrumb from '@/components/Breadcrumb'
 import Hamburger from '@/components/Hamburger'
-
+import ErrorLog from '@/components/ErrorLog'
+import Screenfull from '@/components/Screenfull'
+import SizeSelect from '@/components/SizeSelect'
+import Search from '@/components/HeaderSearch'
 export default {
   components: {
     Breadcrumb,
-    Hamburger
+    Hamburger,
+    Search,
+    ErrorLog,
+    Screenfull,
+    SizeSelect
   },
   computed: {
     ...mapGetters([

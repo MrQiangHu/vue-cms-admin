@@ -1,18 +1,20 @@
 /*
  * @Author: your name
  * @Date: 2020-04-29 14:03:57
- * @LastEditTime: 2020-04-30 02:08:31
- * @LastEditors: your name
+ * @LastEditTime: 2020-05-07 16:20:22
+ * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \vue-cms\vue-cms-admin\src\main.js
  */
 import Vue from 'vue'
 
+import Cookies from 'js-cookie'
+
 import 'normalize.css/normalize.css' // A modern alternative to CSS resets
 
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
-import locale from 'element-ui/lib/locale/lang/en' // lang i18n
+// import locale from 'element-ui/lib/locale/lang/en' // lang i18n
 
 import './styles/element-variables.scss'
 
@@ -24,6 +26,7 @@ import router from './router'
 
 import '@/icons' // icon
 import '@/permission' // permission control
+import './utils/error-log' // error log
 
 /**
  * If you don't want to use mock-server
@@ -39,10 +42,13 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 // set ElementUI lang to EN
-Vue.use(ElementUI, { locale })
+Vue.use(ElementUI)
 // 如果想要中文版 element-ui，按如下方式声明
 // Vue.use(ElementUI)
 
+Vue.use(ElementUI, {
+  size: Cookies.get('size') || 'medium' // set element-ui default size
+})
 Vue.config.productionTip = false
 
 new Vue({
