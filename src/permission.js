@@ -1,3 +1,11 @@
+/*
+ * @Author: your name
+ * @Date: 2020-04-29 14:03:57
+ * @LastEditTime: 2021-03-03 14:28:09
+ * @LastEditors: your name
+ * @Description: In User Settings Edit
+ * @FilePath: \vue-cms\vue-cms-admin\src\permission.js
+ */
 import router from './router'
 import store from './store'
 import { Message } from 'element-ui'

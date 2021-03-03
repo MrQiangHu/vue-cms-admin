@@ -1,3 +1,11 @@
+<!--
+ * @Author: your name
+ * @Date: 2020-04-29 14:03:57
+ * @LastEditTime: 2020-05-07 16:53:45
+ * @LastEditors: Please set LastEditors
+ * @Description: In User Settings Edit
+ * @FilePath: \vue-cms\vue-cms-admin\src\layout\components\Sidebar\SidebarItem.vue
+ -->
 <template>
   <div v-if="!item.hidden">
     <template v-if="hasOneShowingChild(item.children,item) && (!onlyOneChild.children||onlyOneChild.noShowingChildren)&&!item.alwaysShow">
@@ -93,3 +101,4 @@ export default {
   }
 }
 </script>
+
