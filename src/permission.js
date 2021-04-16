@@ -1,8 +1,8 @@
 /*
  * @Author: your name
  * @Date: 2020-04-29 14:03:57
- * @LastEditTime: 2021-03-03 14:28:09
- * @LastEditors: your name
+ * @LastEditTime: 2021-04-07 22:10:24
+ * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \vue-cms\vue-cms-admin\src\permission.js
  */
@@ -26,14 +26,17 @@ router.beforeEach(async(to, from, next) => {
   document.title = getPageTitle(to.meta.title)
 
   // determine whether the user has logged in
+  // 查询 用户TOken
   const hasToken = getToken()
-
+  // 如果有token则表明登陆成功
   if (hasToken) {
+    // 没有登陆
     if (to.path === '/login') {
       // if is logged in, redirect to the home page
       next({ path: '/' })
       NProgress.done()
     } else {
+      // 获取VUEX里的名称？
       const hasGetUserInfo = store.getters.name
       if (hasGetUserInfo) {
         next()
@@ -41,7 +44,6 @@ router.beforeEach(async(to, from, next) => {
         try {
           // get user info
           await store.dispatch('user/getInfo')
-
           next()
         } catch (error) {
           // remove token and go to login page to re-login

@@ -1,13 +1,22 @@
+/*
+ * @Author: your name
+ * @Date: 2020-04-29 14:03:57
+ * @LastEditTime: 2021-04-08 19:12:39
+ * @LastEditors: Please set LastEditors
+ * @Description: In User Settings Edit
+ * @FilePath: \vue-cms-admin\src\utils\request.js
+ */
 import axios from 'axios'
 import { MessageBox, Message } from 'element-ui'
 import store from '@/store'
 import { getToken } from '@/utils/auth'
-
+axios.defaults.withCredentials = true
 // create an axios instance
 const service = axios.create({
-  baseURL: process.env.VUE_APP_BASE_API, // url = base url + request url
+  baseURL: 'http://localhost:8080',
+  // baseURL: 'http://49.234.208.155:8080', // url = base url + request url
   // withCredentials: true, // send cookies when cross-domain requests
-  timeout: 5000 // request timeout
+  timeout: 10000 // request timeout
 })
 
 // request interceptor
@@ -20,6 +29,7 @@ service.interceptors.request.use(
       // ['X-Token'] is a custom headers key
       // please modify it according to the actual situation
       config.headers['X-Token'] = getToken()
+      config.headers['withCredentials'] = true
     }
     return config
   },
@@ -29,7 +39,6 @@ service.interceptors.request.use(
     return Promise.reject(error)
   }
 )
-
 // response interceptor
 service.interceptors.response.use(
   /**
@@ -46,7 +55,7 @@ service.interceptors.response.use(
     const res = response.data
 
     // if the custom code is not 20000, it is judged as an error.
-    if (res.code !== 20000) {
+    if (res.code !== 0) {
       Message({
         message: res.message || 'Error',
         type: 'error',

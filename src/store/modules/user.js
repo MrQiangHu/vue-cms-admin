@@ -48,7 +48,7 @@ const actions = {
     return new Promise((resolve, reject) => {
       getInfo(state.token).then(response => {
         const { data } = response
-
+        // data不存在则表明获取登陆信息失败
         if (!data) {
           reject('Verification failed, please Login again.')
         }

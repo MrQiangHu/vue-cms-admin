@@ -61,7 +61,7 @@ export const constantRoutes = [
     redirect: '/dashboard',
     children: [{
       path: 'dashboard',
-      name: 'Dashboard',
+      name: '首页',
       component: () => import('@/views/dashboard/index'),
       meta: { title: 'Dashboard', icon: 'dashboard' }
     }]
@@ -71,24 +71,29 @@ export const constantRoutes = [
     path: '/example',
     component: Layout,
     redirect: '/example/table',
-    name: 'Example',
-    meta: { title: 'Example', icon: 'example' },
+    name: 'example',
+    meta: { title: '后台管理', icon: 'example' },
     children: [
       {
         path: 'table',
-        name: 'Table',
-        component: () => import('@/views/table/index'),
-        meta: { title: 'Table', icon: 'table' }
+        name: 'table',
+        component: () => import('@/views/table/complex-table'),
+        meta: { title: '代理管理', icon: 'table' }
       },
       {
         path: 'tree',
-        name: 'Tree',
-        component: () => import('@/views/tree/index'),
-        meta: { title: 'Tree', icon: 'tree' }
+        name: 'tree',
+        component: () => import('@/views/table/socketList'),
+        meta: { title: '窗口管理', icon: 'tree' }
+      },
+      {
+        path: 'test',
+        name: 'test',
+        component: () => import('@/views/table/order-table'),
+        meta: { title: '订单列表', icon: 'tree' }
       }
     ]
   },
-
   {
     path: '/form',
     component: Layout,
