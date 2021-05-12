@@ -2,27 +2,23 @@
   <div class="app-container">
     <div class="filter-container" style="margin-bottom:15px;">
       <el-input v-model="listQuery.phone" placeholder="手机号查询" style="width: 200px;" class="filter-item" />
-      <el-select v-model="listQuery.importance" placeholder="Imp" clearable style="width: 90px" class="filter-item">
-        <el-option v-for="item in importanceOptions" :key="item" :label="item" :value="item" />
-      </el-select>
-      <el-select v-model="listQuery.type" placeholder="Type" clearable class="filter-item" style="width: 130px">
-        <el-option v-for="item in calendarTypeOptions" :key="item.key" :label="item.display_name+'('+item.key+')'" :value="item.key" />
-      </el-select>
-      <el-select v-model="listQuery.sort" style="width: 140px" class="filter-item" @change="handleFilter">
-        <el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key" />
-      </el-select>
+      <el-input v-model="listQuery.userid" placeholder="代理ID查询" style="width: 200px;" class="filter-item" />
+      <el-input v-model="listQuery.name" placeholder="代理名称" style="width: 200px;" class="filter-item" />
+      <el-date-picker
+        v-model="listQuery.time"
+        type="daterange"
+        :picker-options="pickerOptions"
+        range-separator="至"
+        start-placeholder="开始日期"
+        end-placeholder="结束日期"
+        align="right"
+      />
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
-        Search
+        筛选查询
       </el-button>
       <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">
         添加代理
       </el-button>
-      <el-button v-waves :loading="downloadLoading" class="filter-item" type="primary" icon="el-icon-download" @click="handleDownload">
-        Export
-      </el-button>
-      <el-checkbox v-model="showReviewer" class="filter-item" style="margin-left:15px;" @change="tableKey=tableKey+1">
-        reviewer
-      </el-checkbox>
     </div>
 
     <el-table
@@ -74,6 +70,18 @@
       <el-table-column label="代理权限名称" class-name="status-col" width="260">
         <template slot-scope="{row}">
           <span>{{ row.rolename }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="日期内总订单数（成功）" class-name="status-col" width="260">
+        <template slot-scope="{row}">
+          <span class="link-type" />
+          <el-tag>{{ row.numtotal?row.numtotal:0 }}</el-tag>
+        </template>
+      </el-table-column>
+
+      <el-table-column label="拼多多购买窗口数" width="300px" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.pdd_num }}</span>
         </template>
       </el-table-column>
       <el-table-column label="操作" align="left" min-width="230" class-name="small-padding fixed-width">
@@ -140,6 +148,19 @@
             <el-option label="停用" value="停用" />
           </el-select>
         </el-form-item>
+        <el-form-item label="拼多多窗口数">
+          <el-select v-model="currObj.pdd_num" placeholder="请设置是否允许连接服务器">
+            <el-option label="0" value="0" />
+            <el-option label="1" value="1" />
+            <el-option label="2" value="2" />
+            <el-option label="3" value="3" />
+            <el-option label="4" value="4" />
+            <el-option label="5" value="5" />
+            <el-option label="6" value="6" />
+            <el-option label="7" value="7" />
+            <el-option label="8" value="8" />
+          </el-select>
+        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogSetVisible = false">取 消</el-button>
@@ -198,7 +219,27 @@ export default {
         importance: undefined,
         title: undefined,
         type: undefined,
-        sort: '+id'
+        sort: '+id',
+        time: [new Date(), new Date()]
+      },
+      pickerOptions: {
+        shortcuts: [{
+          text: '最近一天',
+          onClick(picker) {
+            const end = new Date()
+            const start = new Date()
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 1)
+            picker.$emit('pick', [start, end])
+          }
+        }, {
+          text: '最近一周',
+          onClick(picker) {
+            const end = new Date()
+            const start = new Date()
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 7)
+            picker.$emit('pick', [start, end])
+          }
+        }]
       },
       importanceOptions: [1, 2, 3],
       calendarTypeOptions,
@@ -248,6 +289,19 @@ export default {
   methods: {
     getList() {
       this.listLoading = true
+      if (this.listQuery.time && this.listQuery.time.length === 2) {
+        this.listQuery.time[0].setHours(0)
+        this.listQuery.time[0].setMinutes(0)
+        this.listQuery.time[0].setSeconds(0)
+        this.listQuery.time[1].setHours(23)
+        this.listQuery.time[1].setMinutes(59)
+        this.listQuery.time[1].setSeconds(59)
+        this.listQuery.realTime = []
+        this.listQuery.realTime[0] = this.listQuery.time[0].getTime()
+        this.listQuery.realTime[1] = this.listQuery.time[1].getTime()
+      } else {
+        this.listQuery.realTime = undefined
+      }
       fetchList(this.listQuery).then(response => {
         this.list = response.data.item
         this.total = response.data.total.total
@@ -388,11 +442,12 @@ export default {
     seting(id, index) {
       // 弹出设置框
       this.currObj.id = id
-      this.currObj.status = this.list[index ].status
+      this.currObj.status = this.list[index].status
+      this.currObj.pdd_num = this.list[index].pdd_num
       this.dialogSetVisible = true
     },
     submitSet() {
-      updateStatus('user.update', 'updateStatusById', { id: this.currObj.id, status: this.currObj.status }).then(response => {
+      updateStatus('user.update', 'updateStatusById', { id: this.currObj.id, status: this.currObj.status, pdd_num: this.currObj.pdd_num }).then(response => {
         if (response.code === 0) {
           this.$message({
             message: '修改成功',

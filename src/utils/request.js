@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2020-04-29 14:03:57
- * @LastEditTime: 2021-04-08 19:12:39
+ * @LastEditTime: 2021-04-20 20:03:38
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \vue-cms-admin\src\utils\request.js
@@ -16,7 +16,7 @@ const service = axios.create({
   baseURL: 'http://localhost:8080',
   // baseURL: 'http://49.234.208.155:8080', // url = base url + request url
   // withCredentials: true, // send cookies when cross-domain requests
-  timeout: 10000 // request timeout
+  timeout: 30000 // request timeout
 })
 
 // request interceptor

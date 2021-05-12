@@ -91,18 +91,32 @@ export const constantRoutes = [
         name: 'test',
         component: () => import('@/views/table/order-table'),
         meta: { title: '订单列表', icon: 'tree' }
+      },
+      {
+        path: 'ticket',
+        name: 'ticket',
+        component: () => import('@/views/table/ticket-List'),
+        meta: { title: '淘口令列表', icon: 'table' }
       }
     ]
   },
   {
-    path: '/form',
+    path: '/system',
     component: Layout,
+    redirect: '/system/system',
+    name: 'example',
+    meta: { title: '系统管理', icon: 'nested' },
     children: [
       {
-        path: 'index',
-        name: 'Form',
-        component: () => import('@/views/form/index'),
-        meta: { title: 'Form', icon: 'form' }
+        path: 'gonggao',
+        name: 'gonggao',
+        component: () => import('@/views/table/complex-table'),
+        meta: { title: '公告管理', icon: 'form' }
+      }, {
+        path: 'test2',
+        name: 'test2',
+        component: () => import('@/views/table/complex-table'),
+        meta: { title: '公告管理', icon: 'from' }
       }
     ]
   },

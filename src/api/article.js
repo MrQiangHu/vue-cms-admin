@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-04-08 03:42:13
- * @LastEditTime: 2021-04-14 14:43:35
+ * @LastEditTime: 2021-04-25 21:44:11
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \vue-cms-admin\src\api\article.js
@@ -18,6 +18,13 @@ export function fetchList(query) {
 export function OrderList(query) {
   return request({
     url: '/users/getOrderList',
+    method: 'post',
+    data: query
+  })
+}
+export function TicketList(query) {
+  return request({
+    url: '/users/getTicketList',
     method: 'post',
     data: query
   })

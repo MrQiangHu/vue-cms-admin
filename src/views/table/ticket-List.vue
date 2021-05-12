@@ -1,10 +1,9 @@
 <template>
   <div class="app-container">
     <div class="filter-container" style="margin-bottom:15px;">
-      <el-input v-model="listQuery.userid" placeholder="代理ID" style="width: 200px;" class="filter-item" />
-      <el-input v-model="listQuery.loginid" placeholder="用户账号" style="width: 200px;" class="filter-item" />
-      <el-input v-model="listQuery.itemname" placeholder="商品名称" style="width: 200px;" class="filter-item" />
-      <el-input v-model="listQuery.jieguo" placeholder="支付结果" style="width: 200px;" class="filter-item" />
+      <el-input v-model="listQuery.link" placeholder="link模糊查询" style="width: 200px;" class="filter-item" />
+      <el-input v-model="listQuery.source" placeholder="来源筛选" style="width: 200px;" class="filter-item" />
+      <el-input v-model="listQuery.title" placeholder="标题筛选" style="width: 200px;" class="filter-item" />
       <el-date-picker
         v-model="listQuery.time"
         type="daterange"
@@ -14,21 +13,13 @@
         end-placeholder="结束日期"
         align="right"
       />
-
-      <el-checkbox v-model="listQuery.address" class="filter-item" style="margin-left:15px;">
-        地址不正确
-      </el-checkbox>
-      <el-select v-model="listQuery.status" placeholder="订单状态" clearable style="width: 140px" class="filter-item">
-        <el-option v-for="item in importanceOptions" :key="item" :label="item" :value="item" />
-      </el-select>
-
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
         搜索
       </el-button>
       <el-checkbox v-model="showReviewer" class="filter-item" style="margin-left:15px;">
         自动刷新
       </el-checkbox>
-      当前窗口总数：
+      当前总数：
       <countTo :start-val="0" :end-val="total" :duration="3000" />
     </div>
 
@@ -47,127 +38,42 @@
           <span>{{ row.id }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="账号" width="150px" align="center">
+      <el-table-column label="来源" width="150px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.loginid }}</span>
+          <span>{{ row.source }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="状态" min-width="150px">
+      <el-table-column label="链接或者口令" min-width="150px">
         <template slot-scope="{row}">
           <span class="link-type" />
-          <el-tag>{{ row.status }}</el-tag>
+          <el-tag>{{ row.link }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="商品" min-width="450px" align="center">
+      <el-table-column label="标题" min-width="450px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.itemname }}</span>
+          <span>{{ row.title }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="金额" width="100px" align="center">
+
+      <el-table-column label="时间" width="200px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.money }}</span>
+          <span>{{ new Date(parseInt(row.time)) }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="收货信息" align="center" min-width="130px">
+      <el-table-column label="ticket" width="100px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.receiver }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="支付结果" align="center" width="170">
-        <template slot-scope="{row}">
-          <span>{{ row.msg }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="记录时间" class-name="status-col" width="260">
-        <template slot-scope="{row}">
-          <span>{{ new Date(row.ordertime) }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="用户ID" class-name="status-col" width="260">
-        <template slot-scope="{row}">
-          <span>{{ row.UserId }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="用户名称" class-name="status-col" width="160">
-        <template slot-scope="{row}">
-          <span>{{ row.username }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="下单版本" class-name="status-col" width="160">
-        <template slot-scope="{row}">
-          <span>{{ row.Version }}</span>
+          <span>{{ row.ticket }}</span>
         </template>
       </el-table-column>
     </el-table>
 
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
 
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="100px" style="width: 400px; margin-left:50px;">
-        <el-form-item label="代理名称" prop="username">
-          <el-input v-model="temp.username" placeholder="请输入代理名称" />
-        </el-form-item>
-        <el-form-item label="代理手机号" prop="phone">
-          <el-input v-model="temp.phone" placeholder="请输入代理手机号" />
-        </el-form-item>
-        <el-form-item label="代理ID" prop="userid">
-          <el-input v-model="temp.userid" readonly="readonly" placeholder="请点击生成ID" />
-          <el-button @click="md5Id()">生成ID</el-button>
-        </el-form-item>
-        <el-form-item label="代理QQ" prop="qq">
-          <el-input v-model="temp.qq" placeholder="请输入QQ" />
-        </el-form-item>
-        <el-form-item label="代理状态" prop="status">
-          <el-select v-model="temp.status" class="filter-item" placeholder="请选择">
-            <el-option v-for="item in statusOptions" :key="item" :label="item" :value="item" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="权限名称" prop="rolename">
-          <el-input v-model="temp.rolename" placeholder="请输入权限别名" />
-        </el-form-item>
-        <el-form-item label="代理地址" prop="address">
-          <el-input v-model="temp.rolename" placeholder="请输入代理的地址" />
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">
-          取消
-        </el-button>
-        <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">
-          提交
-        </el-button>
-      </div>
-    </el-dialog>
-
-    <el-dialog :visible.sync="dialogPvVisible" title="Reading statistics">
-      <el-table :data="pvData" border fit highlight-current-row style="width: 100%">
-        <el-table-column prop="key" label="Channel" />
-        <el-table-column prop="pv" label="Pv" />
-      </el-table>
-      <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="dialogPvVisible = false">Confirm</el-button>
-      </span>
-    </el-dialog>
-    <!--这是配置状态的dialog-->
-    <el-dialog title="设置服务器配置" :visible.sync="dialogSetVisible">
-      <el-form :model="currObj">
-        <el-form-item label="请设置是否允许连接服务器">
-          <el-select v-model="currObj.status" placeholder="请设置是否允许连接服务器">
-            <el-option label="允许" value="允许" />
-            <el-option label="停用" value="停用" />
-          </el-select>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogSetVisible = false">取 消</el-button>
-        <el-button type="primary" @click="submitSet">确 定</el-button>
-      </div>
-    </el-dialog>
   </div>
 </template>
 
 <script>
-import { OrderList, fetchPv, createArticle, updateArticle, updateStatus } from '@/api/article'
+import { TicketList, fetchPv, createArticle, updateArticle, updateStatus } from '@/api/article'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -305,7 +211,7 @@ export default {
       } else {
         this.listQuery.realTime = undefined
       }
-      OrderList(this.listQuery).then(response => {
+      TicketList(this.listQuery).then(response => {
         this.list = response.data.item
         this.total = response.data.total.total
 
