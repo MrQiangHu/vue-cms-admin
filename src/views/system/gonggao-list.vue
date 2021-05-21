@@ -1,9 +1,6 @@
 <template>
   <div class="app-container">
     <div class="filter-container" style="margin-bottom:15px;">
-      <el-input v-model="listQuery.phone" placeholder="手机号查询" style="width: 200px;" class="filter-item" />
-      <el-input v-model="listQuery.userid" placeholder="代理ID查询" style="width: 200px;" class="filter-item" />
-      <el-input v-model="listQuery.name" placeholder="代理名称" style="width: 200px;" class="filter-item" />
       <el-date-picker
         v-model="listQuery.time"
         type="daterange"
@@ -17,7 +14,7 @@
         筛选查询
       </el-button>
       <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">
-        添加代理
+        添加公告
       </el-button>
     </div>
 
@@ -36,124 +33,85 @@
           <span>{{ row.id }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="代理名称" width="150px" align="center">
+      <el-table-column label="开始时间" min-width="150px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.username }}</span>
+          <span>{{ new Date(parseInt(row.startTime)) }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="代理手机号" width="200px">
+      <el-table-column label="结束时间" min-width="200px">
         <template slot-scope="{row}">
-          <span class="link-type" @click="handleUpdate(row)">{{ row.title }}</span>
-          <el-tag>{{ row.phone }}</el-tag>
+          <el-tag>{{ new Date( parseInt(row.endTime)) }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="代理ID" width="400px" align="center">
+      <el-table-column label="消息内容" min-width="400px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.userid }}</span>
+          <span>{{ row.info.substring(0,50) }}.....</span>
         </template>
       </el-table-column>
-      <el-table-column label="代理地址" width="100px" align="center">
+      <el-table-column label="间隔时间" min-width="100px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.address }}</span>
+          <span>{{ row.everyTime/1000 }}秒</span>
         </template>
       </el-table-column>
-      <el-table-column label="代理QQ" align="center" width="150px">
+      <el-table-column label="显示时间" align="center" min-width="150px">
         <template slot-scope="{row}">
-          <span>{{ row.qq }}</span>
+          <span>{{ row.showTime/1000 }}秒</span>
         </template>
       </el-table-column>
-      <el-table-column label="代理状态" align="center" width="100">
+      <el-table-column label="创建时间" align="center" min-width="150px">
         <template slot-scope="{row}">
-          <span>{{ row.status }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="代理权限名称" class-name="status-col" width="260">
-        <template slot-scope="{row}">
-          <span>{{ row.rolename }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="日期内总订单数（成功）" class-name="status-col" width="260">
-        <template slot-scope="{row}">
-          <span class="link-type" />
-          <el-tag>{{ row.numtotal?row.numtotal:0 }}</el-tag>
-        </template>
-      </el-table-column>
-
-      <el-table-column label="拼多多窗口数" width="100px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.pdd_num }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="剩余点数" width="100px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.dianshu }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="是否扣点版" width="100px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.isKoudian?row.isKoudian:'否' }}</span>
+          <span>{{ new Date( (row.time)) }}秒</span>
         </template>
       </el-table-column>
       <el-table-column label="操作" align="left" min-width="230" class-name="small-padding fixed-width">
         <template slot-scope="id">
-          <el-button type="success" icon="el-icon-setting" @click="czFun(list[id.$index].id,id.$index)">充值</el-button>
-          <el-button type="primary" icon="el-icon-setting" @click="handleUpdate(list[id.$index])">修改</el-button>
-          <el-button type="warning" icon="el-icon-setting" @click="seting(list[id.$index].id,id.$index)">设置</el-button>
+          <el-button type="warning" icon="el-icon-setting" @click="handleUpdate(list[id.$index])">修改</el-button>
           <el-button type="danger" icon="el-icon-setting" @click="delteUser(list[id.$index].id)">删除</el-button>
-
         </template>
       </el-table-column>
     </el-table>
 
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
 
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
+    <el-dialog :title="textMap[dialogStatus]" width="600px" :visible.sync="dialogFormVisible">
       <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="100px" style="width: 400px; margin-left:50px;">
-        <el-form-item label="代理名称" prop="username">
-          <el-input v-model="temp.username" placeholder="请输入代理名称" />
+        <el-form-item label="时间区间" prop="time">
+          <el-date-picker
+            v-model="temp.time"
+            type="datetimerange"
+            :picker-options="pickerOptions"
+            range-separator="至"
+            start-placeholder="开始日期"
+            end-placeholder="结束日期"
+            align="right"
+          />
         </el-form-item>
-        <el-form-item label="代理手机号" prop="phone">
-          <el-input v-model="temp.phone" placeholder="请输入代理手机号" />
+        <el-form-item label="间隔时间" prop="everyTime">
+          <el-input v-model="temp.everyTime" type="number" placeholder="每间隔多少秒显示多少秒！" width="50"> <template slot="append">秒</template>
+          </el-input></el-form-item>
+        <el-form-item label="显示时间" prop="showTime">
+          <el-input v-model="temp.showTime" type="number" placeholder="每间隔多少秒显示多少秒！" width="50"><template slot="append">秒</template>
+          </el-input></el-form-item>
+        <el-form-item label="显示内容" prop="info">
+          <el-input
+            v-model="temp.info"
+            type="textarea"
+            placeholder="请输入内容"
+            maxlength="500"
+            show-word-limit
+            rows="15"
+          />
         </el-form-item>
-        <el-form-item label="代理ID" prop="userid">
-          <el-input v-model="temp.userid" readonly="readonly" placeholder="请点击生成ID" />
-          <el-button @click="md5Id()">生成ID</el-button>
-        </el-form-item>
-        <el-form-item label="代理QQ" prop="qq">
-          <el-input v-model="temp.qq" placeholder="请输入QQ" />
-        </el-form-item>
-        <el-form-item label="代理状态" prop="status">
-          <el-select v-model="temp.status" class="filter-item" placeholder="请选择">
-            <el-option v-for="item in statusOptions" :key="item" :label="item" :value="item" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="是否扣点版" prop="isKoudian">
-          <el-select v-model="temp.isKoudian" class="filter-item" placeholder="请选择">
-            <el-option label="是" value="是" />
-            <el-option label="否" value="否" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="权限名称" prop="rolename">
-          <el-input v-model="temp.rolename" placeholder="请输入权限别名" />
-        </el-form-item>
-        <el-form-item label="代理地址" prop="address">
-          <el-input v-model="temp.address" placeholder="请输入代理的地址" />
-        </el-form-item>
-        <el-form-item label="拼多多窗口数" prop="pdd_num">
-          <el-select v-model="temp.pdd_num" placeholder="请设置是否允许连接服务器">
-            <el-option label="0" value="0" default="default" />
-            <el-option label="1" value="1" />
-            <el-option label="2" value="2" />
-            <el-option label="3" value="3" />
-            <el-option label="4" value="4" />
-            <el-option label="5" value="5" />
-            <el-option label="6" value="6" />
-            <el-option label="7" value="7" />
-            <el-option label="8" value="8" />
-            <el-option label="9" value="9" />
-            <el-option label="10" value="10" />
-          </el-select>
-        </el-form-item>
+
+        <el-card class="box-card">
+          <div slot="header" class="clearfix">
+            <span>显示模拟<span style="color:red;">(换行请输入回车 开头缩进请输入空格)</span></span>
+          </div>
+          <div style="padding-right:0px;">
+            <span v-html="temp.info? temp.info.replace(/\n/g,'<br/>').replace(/\s/g,'&nbsp;&nbsp;'):''" />
+          </div>
+        </el-card>
+
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">
@@ -173,89 +131,20 @@
         <el-button type="primary" @click="dialogPvVisible = false">Confirm</el-button>
       </span>
     </el-dialog>
-    <!--这是配置状态的dialog-->
-    <el-dialog title="设置服务器配置" :visible.sync="dialogSetVisible">
-      <el-form :model="currObj">
-        <el-form-item label="请设置是否允许连接服务器">
-          <el-select v-model="currObj.status" placeholder="请设置是否允许连接服务器">
-            <el-option label="允许" value="允许" />
-            <el-option label="停用" value="停用" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="拼多多窗口数" prop="pdd_num">
-          <el-select v-model="currObj.pdd_num" placeholder="请设置是否允许连接服务器">
-            <el-option label="0" value="0" />
-            <el-option label="1" value="1" />
-            <el-option label="2" value="2" />
-            <el-option label="3" value="3" />
-            <el-option label="4" value="4" />
-            <el-option label="5" value="5" />
-            <el-option label="6" value="6" />
-            <el-option label="7" value="7" />
-            <el-option label="8" value="8" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="是否扣点版" prop="isKoudian">
-          <el-select v-model="currObj.isKoudian" class="filter-item" placeholder="请选择">
-            <el-option label="是" value="是" />
-            <el-option label="否" value="否" />
-          </el-select>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogSetVisible = false">取 消</el-button>
-        <el-button type="primary" @click="submitSet">确 定</el-button>
-      </div>
-    </el-dialog>
-    <!--这是重置界面的dialog-->
-    <el-dialog title="点数充值" :visible.sync="dialogCZVisible">
-      <el-form ref="czObj" :model="czObj">
-        <el-form-item label="现有数量" prop="address">
-          <el-input v-model="czObj.dianshu" readonly="readonly" placeholder="现有数量" />
-        </el-form-item>
-        <el-form-item
-          prop="addDianshu"
-          label="充值数量"
-          :rules="[
-            { required: true, message: '充值点数不能为空'},
-            { type: 'number', message: '充值点数必须为数字值'}
-          ]"
-        >
-          <el-input v-model.number="czObj.addDianshu" type="number" autocomplete="off" />
-        </el-form-item>
-        <el-form-item
-          label="操作者标识"
-          prop="rolename"
-          placeholder="操作者标识"
-          :rules="[
-            { required: true, message: '操作者标识不能为空'}
-          ]"
-        >
-          <el-input v-model="czObj.rolename" placeholder="操作者标识" />
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogCZVisible = false">取 消</el-button>
-        <el-button type="primary" @click="czsubmitSet">充 值</el-button>
-      </div>
-    </el-dialog>
   </div>
 </template>
 
 <script>
-import { fetchList, fetchPv, createArticle, updateStatus, deleteUser } from '@/api/article'
+import { gonggao_list, fetchPv, updateStatus, deleteUser } from '@/api/article'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
-import md5 from 'js-md5'
-
 const calendarTypeOptions = [
   { key: 'CN', display_name: 'China' },
   { key: 'US', display_name: 'USA' },
   { key: 'JP', display_name: 'Japan' },
   { key: 'EU', display_name: 'Eurozone' }
 ]
-
 // arr to obj, such as { CN : "China", US : "USA" }
 const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {
   acc[cur.key] = cur.display_name
@@ -288,10 +177,6 @@ export default {
       listQuery: {
         page: 1,
         limit: 20,
-        importance: undefined,
-        title: undefined,
-        type: undefined,
-        sort: '+id',
         time: [new Date(), new Date()]
       },
       pickerOptions: {
@@ -322,33 +207,24 @@ export default {
       temp: {
         id: undefined,
         username: 1,
-        phone: '',
-        userid: '',
-        qq: '',
-        rolename: '',
-        status: '允许',
-        address: ''
+        context: ''
       },
       dialogFormVisible: false,
       dialogStatus: '',
       textMap: {
-        update: '修改信息',
-        create: '添加代理'
+        update: '修改公告',
+        create: '添加公告'
       },
       dialogPvVisible: false,
       pvData: [],
       rules: {
         // type: [{ required: true, message: 'type is required', trigger: 'change' }],
         // timestamp: [{ type: 'date', required: true, message: 'timestamp is required', trigger: 'change' }],
-        phone: [{ required: true, message: '请输入手机号码!', trigger: 'blur' }, { min: 10, max: 12, message: '手机号长度为11位', trigger: 'blur' }],
-        username: [{ required: true, message: '请输入代理名称', trigger: 'blur' }, { min: 1, max: 12, trigger: 'blur' }],
-        userid: [{ required: true, message: '请生成代理ID', trigger: 'change' }, { min: 1, trigger: 'change' }],
-        address: [{ required: true, message: '请输入代理地址', trigger: 'blur' }, { min: 1, trigger: 'blur' }],
-        qq: [{ required: true, message: '请输入代理QQ', trigger: 'blur' }, { min: 1, trigger: 'blur' }],
-        status: [{ required: true, message: '请选择状态', trigger: 'change' }, { min: 1, trigger: 'change' }],
-        rolename: [{ required: true, message: '请输入权限名称', trigger: 'blur' }, { min: 1, trigger: 'blur' }],
-        pdd_num: [{ required: true, message: '请输入拼多多窗口数', trigger: 'blur' }, { min: 1, trigger: 'change' }],
-        isKoudian: [{ required: true, message: '请选择是否为扣点版', trigger: 'blur' }, { min: 1, trigger: 'blur' }]
+        everyTime: [{ required: true, message: '请输入间隔时间!', trigger: 'blur' }],
+        showTime: [{ required: true, message: '请输入显示时间', trigger: 'blur' }],
+        context: [{ required: true, message: '请输入显示内容！', trigger: 'change' }],
+        info: [{ required: true, message: '请输入显示内容！', trigger: 'change' }],
+        time: [{ required: true, message: '请选择时间区间！', trigger: 'change' }]
       },
       downloadLoading: false,
       dialogSetVisible: false,
@@ -385,19 +261,15 @@ export default {
       } else {
         this.listQuery.realTime = undefined
       }
-      fetchList(this.listQuery).then(response => {
+      gonggao_list(this.listQuery).then(response => {
         this.list = response.data.item
         this.total = response.data.total.total
         // Just to simulate the time of the request
         this.listLoading = false
       })
     },
-    md5Id() {
-      if (this.temp.phone && this.temp.phone !== '') {
-        // 用手机进行加密就行
-        this.temp.userid = md5(this.temp.phone).toUpperCase()
-        this.$forceUpdate()
-      }
+    changeShowMoni() {
+      // this.temp.moniInfo = this.temp.context
     },
     handleFilter() {
       this.listQuery.page = 1
@@ -446,25 +318,33 @@ export default {
     createData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          this.temp.id = parseInt(Math.random() * 100) + 1024 // mock a id
-          this.temp.author = 'vue-element-admin'
-          createArticle(this.temp).then(() => {
-            this.list.unshift(this.temp)
-            this.dialogFormVisible = false
-            this.$notify({
-              title: 'Success',
-              message: '提交成功！',
-              type: 'success',
-              duration: 2000
-            })
+          this.temp.everyTime = this.temp.everyTime * 1000
+          this.temp.showTime = this.temp.showTime * 1000
+          this.temp.startTime = this.temp.time[0].getTime()
+          this.temp.endTime = this.temp.time[1].getTime()
+
+          deleteUser('system.insert', 'Gonggao', this.temp).then(response => {
+            if (response.code === 0) {
+              this.dialogFormVisible = false
+              this.$message({
+                type: 'success',
+                message: '添加成功!'
+              })
+              this.getList()
+            } else {
+              this.$message.error('添加失败！' + response.code)
+            }
           })
         }
       })
     },
     handleUpdate(row) {
       this.temp = Object.assign({}, row) // copy obj
-      this.temp.timestamp = new Date(this.temp.timestamp)
-      this.temp.pdd_num = this.temp.pdd_num ? this.temp.pdd_num + '' : 0 + ''
+      this.temp.time = []
+      this.temp.everyTime = this.temp.everyTime / 1000
+      this.temp.showTime = this.temp.showTime / 1000
+      this.temp.time[0] = new Date(parseInt(this.temp.startTime))
+      this.temp.time[1] = new Date(parseInt(this.temp.endTime))
       this.dialogStatus = 'update'
       this.dialogFormVisible = true
       this.$nextTick(() => {
@@ -474,18 +354,22 @@ export default {
     updateData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          const tempData = Object.assign({}, this.temp)
-          tempData.timestamp = +new Date(tempData.timestamp) // change Thu Nov 30 2017 16:41:05 GMT+0800 (CST) to 1512031311464
-          deleteUser('user.update', 'updateUserInfo', tempData).then(response => {
+          // const tempData = Object.assign({}, this.temp)
+          this.temp.everyTime = this.temp.everyTime * 1000
+          this.temp.showTime = this.temp.showTime * 1000
+          this.temp.startTime = this.temp.time[0].getTime()
+          this.temp.endTime = this.temp.time[1].getTime()
+
+          deleteUser('system.update', 'updateGonggaoById', this.temp).then(response => {
             if (response.code === 0) {
               this.dialogFormVisible = false
               this.$message({
                 type: 'success',
-                message: '修改成功!'
+                message: '修改公告成功!'
               })
               this.getList()
             } else {
-              this.$message.error('修改失败！')
+              this.$message.error('修改失败！' + response.code)
             }
           })
         }
@@ -536,14 +420,14 @@ export default {
       this.currObj.pdd_num = this.list[index].pdd_num
       this.currObj.isKoudian = this.list[index].isKoudian
       this.dialogSetVisible = true
-    }, delteUser(id, index) {
+    }, delteUser(id) {
       // 弹出设置框
-      this.$confirm('此操作将永久删除该用户, 是否继续?', '提示', {
+      this.$confirm('此操作将永久删除该公告, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'error'
       }).then(() => {
-        deleteUser('user.update', 'deleteUserById', { id: id }).then(response => {
+        deleteUser('system.update', 'deleteGonggao', { id: id }).then(response => {
           if (response.code === 0) {
             this.$message({
               type: 'success',
@@ -599,3 +483,15 @@ export default {
   }
 }
 </script>
+
+<style>
+  .box-card {
+    margin-left: 80px;
+    width: 400px;
+    height: 280px;
+  }
+  .el-card__body{
+    padding-right: 0;
+    width: 1000px;
+  }
+</style>

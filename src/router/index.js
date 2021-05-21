@@ -5,7 +5,7 @@ Vue.use(Router)
 
 /* Layout */
 import Layout from '@/layout'
-
+// const dashboard = resolve => require(['../views/dashboard/index'], resolve)
 /**
  * Note: sub-menu only appear when route children.length >= 1
  * Detail see: https://panjiachen.github.io/vue-element-admin-site/guide/essentials/router-and-nav.html
@@ -30,7 +30,7 @@ import Layout from '@/layout'
  * a base page that does not have permission requirements
  * all roles can be accessed
  */
-export const constantRoutes = [
+export const constantRouterMap = [
   // 选择尺寸重定向
   {
     path: '/redirect',
@@ -65,38 +65,55 @@ export const constantRoutes = [
       component: () => import('@/views/dashboard/index'),
       meta: { title: 'Dashboard', icon: 'dashboard' }
     }]
-  },
-
+  }
+  // 404 page must be placed at the end !!!
+  // { path: '*', redirect: '/404', hidden: true }
+]
+// 异步挂载的路由
+// 动态需要根据权限加载的路由表
+export const asyncRouterMap = [
   {
     path: '/example',
     component: Layout,
     redirect: '/example/table',
     name: 'example',
-    meta: { title: '后台管理', icon: 'example' },
+    meta: { title: '后台管理', icon: 'example', roles: ['admin', 'daili', 'yunwai', 'super_editor'] },
     children: [
       {
         path: 'table',
         name: 'table',
         component: () => import('@/views/table/complex-table'),
-        meta: { title: '代理管理', icon: 'table' }
+        meta: { title: '代理管理', icon: 'table', roles: ['admin', 'daili', 'super_editor'] }
       },
       {
         path: 'tree',
         name: 'tree',
         component: () => import('@/views/table/socketList'),
-        meta: { title: '窗口管理', icon: 'tree' }
+        meta: { title: '窗口管理', icon: 'tree', roles: ['admin', 'daili', 'super_editor'] }
       },
       {
         path: 'test',
         name: 'test',
         component: () => import('@/views/table/order-table'),
-        meta: { title: '订单列表', icon: 'tree' }
+        meta: { title: '订单列表', icon: 'tree', roles: ['admin', 'daili', 'yunwai', 'super_editor'] }
       },
       {
         path: 'ticket',
         name: 'ticket',
         component: () => import('@/views/table/ticket-List'),
-        meta: { title: '淘口令列表', icon: 'table' }
+        meta: { title: '淘口令列表', icon: 'table', roles: ['admin', 'super_editor'] }
+      },
+      {
+        path: 'czrecord',
+        name: 'czrecord',
+        component: () => import('@/views/table/czrecord-List'),
+        meta: { title: '充值记录列表', icon: 'table', roles: ['admin', 'super_editor'] }
+      },
+      {
+        path: 'tjb',
+        name: 'tjb',
+        component: () => import('@/views/system/tjb-list'),
+        meta: { title: '特价版窗口', icon: 'table', roles: ['admin', 'daili', 'super_editor'] }
       }
     ]
   },
@@ -105,107 +122,33 @@ export const constantRoutes = [
     component: Layout,
     redirect: '/system/system',
     name: 'example',
-    meta: { title: '系统管理', icon: 'nested' },
+    meta: { title: '系统管理', icon: 'nested', roles: ['admin', 'super_editor'] },
     children: [
       {
         path: 'gonggao',
         name: 'gonggao',
-        component: () => import('@/views/table/complex-table'),
-        meta: { title: '公告管理', icon: 'form' }
-      }, {
-        path: 'test2',
-        name: 'test2',
-        component: () => import('@/views/table/complex-table'),
-        meta: { title: '公告管理', icon: 'from' }
+        component: () => import('@/views/system/gonggao-list'),
+        meta: { title: '公告管理', icon: 'form', roles: ['admin', 'super_editor'] }
       }
     ]
-  },
-
-  {
-    path: '/nested',
-    component: Layout,
-    redirect: '/nested/menu1',
-    name: 'Nested',
-    meta: {
-      title: 'Nested',
-      icon: 'nested'
-    },
-    children: [
-      {
-        path: 'menu1',
-        component: () => import('@/views/nested/menu1/index'), // Parent router-view
-        name: 'Menu1',
-        meta: { title: 'Menu1' },
-        children: [
-          {
-            path: 'menu1-1',
-            component: () => import('@/views/nested/menu1/menu1-1'),
-            name: 'Menu1-1',
-            meta: { title: 'Menu1-1' }
-          },
-          {
-            path: 'menu1-2',
-            component: () => import('@/views/nested/menu1/menu1-2'),
-            name: 'Menu1-2',
-            meta: { title: 'Menu1-2' },
-            children: [
-              {
-                path: 'menu1-2-1',
-                component: () => import('@/views/nested/menu1/menu1-2/menu1-2-1'),
-                name: 'Menu1-2-1',
-                meta: { title: 'Menu1-2-1' }
-              },
-              {
-                path: 'menu1-2-2',
-                component: () => import('@/views/nested/menu1/menu1-2/menu1-2-2'),
-                name: 'Menu1-2-2',
-                meta: { title: 'Menu1-2-2' }
-              }
-            ]
-          },
-          {
-            path: 'menu1-3',
-            component: () => import('@/views/nested/menu1/menu1-3'),
-            name: 'Menu1-3',
-            meta: { title: 'Menu1-3' }
-          }
-        ]
-      },
-      {
-        path: 'menu2',
-        component: () => import('@/views/nested/menu2/index'),
-        meta: { title: 'menu2' }
-      }
-    ]
-  },
-
-  {
-    path: 'external-link',
-    component: Layout,
-    children: [
-      {
-        path: 'https://panjiachen.github.io/vue-element-admin-site/#/',
-        meta: { title: 'External Link', icon: 'link' }
-      }
-    ]
-  },
-
-  // 404 page must be placed at the end !!!
-  { path: '*', redirect: '/404', hidden: true }
+  }
+  // { path: '*', redirect: '/404', hidden: true }
 ]
 
+// const router = createRouter()
+
+// Detail see: https://github.com/vuejs/vue-router/issues/1234#issuecomment-357941465
+// 实例化vue的时候只挂载constantRouter
+export default new Router({
+  routes: constantRouterMap
+})
 const createRouter = () => new Router({
   // mode: 'history', // require service support
   scrollBehavior: () => ({ y: 0 }),
-  routes: constantRoutes
+  routes: constantRouterMap
 })
-
 const router = createRouter()
-
-// Detail see: https://github.com/vuejs/vue-router/issues/1234#issuecomment-357941465
 export function resetRouter() {
   const newRouter = createRouter()
   router.matcher = newRouter.matcher // reset router
 }
-
-export default router

@@ -1,3 +1,11 @@
+/*
+ * @Author: your name
+ * @Date: 2020-04-29 14:03:57
+ * @LastEditTime: 2021-05-15 15:11:08
+ * @LastEditors: Please set LastEditors
+ * @Description: In User Settings Edit
+ * @FilePath: \vue-cms-admin\src\store\modules\user.js
+ */
 import { login, logout, getInfo } from '@/api/user'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import { resetRouter } from '@/router'
@@ -34,6 +42,10 @@ const actions = {
     return new Promise((resolve, reject) => {
       login({ username: username.trim(), password: password }).then(response => {
         const { data } = response
+        if (!data) {
+          reject(response.message)
+          return
+        }
         commit('SET_TOKEN', data.token)
         setToken(data.token)
         resolve()
@@ -50,7 +62,7 @@ const actions = {
         const { data } = response
         // data不存在则表明获取登陆信息失败
         if (!data) {
-          reject('Verification failed, please Login again.')
+          resolve(data)
         }
 
         const { name, avatar } = data

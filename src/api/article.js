@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-04-08 03:42:13
- * @LastEditTime: 2021-04-25 21:44:11
+ * @LastEditTime: 2021-05-19 02:22:57
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \vue-cms-admin\src\api\article.js
@@ -15,9 +15,30 @@ export function fetchList(query) {
     data: query
   })
 }
+export function gonggao_list(query) {
+  return request({
+    url: '/users/getGonggaoList',
+    method: 'post',
+    data: query
+  })
+}
+export function tjbList(query) {
+  return request({
+    url: '/users/getAllTjbDevice',
+    method: 'post',
+    data: query
+  })
+}
 export function OrderList(query) {
   return request({
     url: '/users/getOrderList',
+    method: 'post',
+    data: query
+  })
+}
+export function czrecordList(query) {
+  return request({
+    url: '/users/czrecordList',
     method: 'post',
     data: query
   })
@@ -38,6 +59,18 @@ export function SocketList(query) {
   })
 }
 export function updateStatus(servicepackage, servicename, params) {
+  const postdata = {}
+  postdata.param = params
+  postdata.servicepackage = servicepackage
+  postdata.servicename = servicename
+  // 根据ID修改对应状态
+  return request({
+    url: '/breeze/doServer',
+    method: 'post',
+    data: postdata
+  })
+}
+export function deleteUser(servicepackage, servicename, params) {
   const postdata = {}
   postdata.param = params
   postdata.servicepackage = servicepackage

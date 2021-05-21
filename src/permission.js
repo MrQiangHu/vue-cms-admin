@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2020-04-29 14:03:57
- * @LastEditTime: 2021-04-07 22:10:24
+ * @LastEditTime: 2021-05-15 14:01:23
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \vue-cms\vue-cms-admin\src\permission.js
@@ -12,7 +12,7 @@ import { Message } from 'element-ui'
 import NProgress from 'nprogress' // progress bar
 import 'nprogress/nprogress.css' // progress bar style
 import { getToken } from '@/utils/auth' // get token from cookie
-import getPageTitle from '@/utils/get-page-title'
+// import getPageTitle from '@/utils/get-page-title'
 
 NProgress.configure({ showSpinner: false }) // NProgress Configuration
 
@@ -23,7 +23,7 @@ router.beforeEach(async(to, from, next) => {
   NProgress.start()
 
   // set page title
-  document.title = getPageTitle(to.meta.title)
+  document.title = '探花后台管理系统'
 
   // determine whether the user has logged in
   // 查询 用户TOken
@@ -42,9 +42,26 @@ router.beforeEach(async(to, from, next) => {
         next()
       } else {
         try {
+          // await store.dispatch('user/getInfo')
+          // next()
           // get user info
-          await store.dispatch('user/getInfo')
-          next()
+          // await store.dispatch('user/getInfo')
+          if (store.getters.roles.length === 0) { // 判断当前用户是否已拉取完user_info信息
+            // note: roles must be a object array! such as: ['admin'] or ,['developer','editor']
+            const { roles } = await store.dispatch('user/getInfo')
+
+            // generate accessible routes map based on roles
+            const accessRoutes = await store.dispatch('permission/generateRoutes', roles)
+
+            // dynamically add accessible routes
+            router.addRoutes(accessRoutes)
+
+            // hack method to ensure that addRoutes is complete
+            // set the replace: true, so the navigation will not leave a history record
+            next({ ...to, replace: true })
+          } else {
+            next() // 当有用户权限的时候，说明所有可访问路由已生成 如访问没权限的全面会自动进入404页面
+          }
         } catch (error) {
           // remove token and go to login page to re-login
           await store.dispatch('user/resetToken')
@@ -59,6 +76,7 @@ router.beforeEach(async(to, from, next) => {
 
     if (whiteList.indexOf(to.path) !== -1) {
       // in the free login whitelist, go directly
+
       next()
     } else {
       // other pages that do not have permission to access are redirected to the login page.

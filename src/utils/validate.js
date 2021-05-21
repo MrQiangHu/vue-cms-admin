@@ -1,8 +1,8 @@
 /*
  * @Author: your name
  * @Date: 2020-04-29 14:03:57
- * @LastEditTime: 2020-05-06 16:07:48
- * @LastEditors: your name
+ * @LastEditTime: 2021-05-15 15:22:44
+ * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \vue-cms\vue-cms-admin\src\utils\validate.js
  */
@@ -23,8 +23,9 @@ export function isExternal(path) {
  * @returns {Boolean}
  */
 export function validUsername(str) {
-  const valid_map = ['admin', 'editor']
-  return valid_map.indexOf(str.trim()) >= 0
+  // const valid_map = ['admin', 'editor']
+  if (!str) { return false }
+  return true
 }
 /**
  * @param {string} str

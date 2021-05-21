@@ -4,7 +4,9 @@
       <el-input v-model="listQuery.userid" placeholder="代理ID" style="width: 200px;" class="filter-item" />
       <el-input v-model="listQuery.loginid" placeholder="用户账号" style="width: 200px;" class="filter-item" />
       <el-input v-model="listQuery.itemname" placeholder="商品名称" style="width: 200px;" class="filter-item" />
+      <el-input v-model="listQuery.phone" placeholder="收货手机" style="width: 200px;" class="filter-item" />
       <el-input v-model="listQuery.jieguo" placeholder="支付结果" style="width: 200px;" class="filter-item" />
+      <el-input v-model="listQuery.shouhuo" placeholder="收货信息" style="width: 200px;" class="filter-item" />
       <el-date-picker
         v-model="listQuery.time"
         type="daterange"
@@ -30,6 +32,9 @@
       </el-checkbox>
       当前窗口总数：
       <countTo :start-val="0" :end-val="total" :duration="3000" />
+      <el-button :loading="downloadLoading" style="margin:0 0 20px 20px;" type="primary" icon="el-icon-document" @click="handleDownload">
+        导出Excel
+      </el-button>
     </div>
 
     <el-table
@@ -52,13 +57,18 @@
           <span>{{ row.loginid }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="状态" min-width="150px">
+      <el-table-column label="状态" min-width="80px">
         <template slot-scope="{row}">
           <span class="link-type" />
           <el-tag>{{ row.status }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="商品" min-width="450px" align="center">
+      <el-table-column label="收货手机号" width="180px">
+        <template slot-scope="{row}">
+          <span>{{ row.phone }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="商品" min-width="250px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.itemname }}</span>
         </template>
@@ -68,12 +78,12 @@
           <span>{{ row.money }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="收货信息" align="center" min-width="130px">
+      <el-table-column label="收货信息" align="center" min-width="50px">
         <template slot-scope="{row}">
           <span>{{ row.receiver }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="支付结果" align="center" width="170">
+      <el-table-column label="支付结果" align="center" min-width="270">
         <template slot-scope="{row}">
           <span>{{ row.msg }}</span>
         </template>
@@ -217,6 +227,7 @@ export default {
         itemname: undefined,
         type: undefined,
         sort: '+id',
+        shouhuo: '',
         time: [new Date(), new Date()]
       },
       importanceOptions: ['所有', '成功', '0支付失败：网页加载失败', '支付2：此商品已无法购买, 或已下架', '支付5：支付金额大于最大购买金额', '购买的账号没钱', '银行卡没钱', '其他情况'],
@@ -429,9 +440,72 @@ export default {
       })
     },
     handleDownload() {
+      if (this.downloadLoading) return
+      this.listQuery.time[0].setHours(0)
+      this.listQuery.time[0].setMinutes(0)
+      this.listQuery.time[0].setSeconds(0)
+      this.listQuery.time[1].setHours(23)
+      this.listQuery.time[1].setMinutes(59)
+      this.listQuery.time[1].setSeconds(59)
+      this.listQuery.realTime = []
+      this.listQuery.realTime[0] = this.listQuery.time[0].getTime()
+      this.listQuery.realTime[1] = this.listQuery.time[1].getTime()
+      this.downloadLoading = true
+      updateStatus('order.query', 'excelgroupPhone', this.listQuery).then(response => {
+        this.downloadLoading = false
+        response.data = JSON.parse(response.data)
+        if (response && response.code === 0) {
+          if (response.data.length <= 0) {
+            this.$message({
+              message: '没用数据可供导出！',
+              type: 'error'
+            })
+            this.downloadLoading = false
+            return
+          }
+            import('@/vendor/Export2Excel').then(excel => {
+              const tHeader = ['淘宝号', '收货手机号', '手机号下单总数']
+              const filterVal = ['loginid', 'phone', 'nums']
+              const list = response.data
+              const data = this.formatJson(filterVal, list)
+              const filename = this.formatData(this.listQuery.time[0]) + '到' + this.formatData(this.listQuery.time[1])
+              excel.export_json_to_excel({
+                header: tHeader,
+                data,
+                filename: filename,
+                autoWidth: true,
+                bookType: 'xlsx'
+              })
+              this.downloadLoading = false
+            })
+        } else if (response.code === 22) {
+          this.$message({
+            message: '管理员未登录，或没权限！' + response.code,
+            type: 'error'
+          })
+        } else {
+          this.$message({
+            message: '未知错误，请联系管理员！' + response.code,
+            type: 'error'
+          })
+        }
+      })
+    }, formatData(date) {
+      var seperator1 = '-'
+      var year = date.getFullYear()
+      var month = date.getMonth() + 1
+      var strDate = date.getDate()
+      if (month >= 1 && month <= 9) {
+        month = '0' + month
+      }
+      if (strDate >= 0 && strDate <= 9) {
+        strDate = '0' + strDate
+      }
+      var currentdate = year + seperator1 + month + seperator1 + strDate
+      return currentdate
     },
-    formatJson(filterVal) {
-      return this.list.map(v => filterVal.map(j => {
+    formatJson(filterVal, list) {
+      return list.map(v => filterVal.map(j => {
         if (j === 'timestamp') {
           return parseTime(v[j])
         } else {
