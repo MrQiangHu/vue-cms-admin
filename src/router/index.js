@@ -131,6 +131,21 @@ export const asyncRouterMap = [
         meta: { title: '公告管理', icon: 'form', roles: ['admin', 'super_editor'] }
       }
     ]
+  },
+  {
+    path: '/user',
+    component: Layout,
+    redirect: '/user/user',
+    name: 'example',
+    meta: { title: '用户数据', icon: 'nested', roles: ['admin', 'user'] },
+    children: [
+      {
+        path: 'userorder',
+        name: 'userorder',
+        component: () => import('@/views/table/user-order'),
+        meta: { title: '用户订单', icon: 'table', roles: ['admin', 'user'] }
+      }
+    ]
   }
   // { path: '*', redirect: '/404', hidden: true }
 ]

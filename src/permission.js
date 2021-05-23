@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2020-04-29 14:03:57
- * @LastEditTime: 2021-05-15 14:01:23
+ * @LastEditTime: 2021-05-21 20:57:28
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \vue-cms\vue-cms-admin\src\permission.js
@@ -23,7 +23,7 @@ router.beforeEach(async(to, from, next) => {
   NProgress.start()
 
   // set page title
-  document.title = '探花后台管理系统'
+  document.title = '探花网络管理系统'
 
   // determine whether the user has logged in
   // 查询 用户TOken

@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-04-08 03:42:13
- * @LastEditTime: 2021-05-19 02:22:57
+ * @LastEditTime: 2021-05-21 20:29:50
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \vue-cms-admin\src\api\article.js
@@ -32,6 +32,13 @@ export function tjbList(query) {
 export function OrderList(query) {
   return request({
     url: '/users/getOrderList',
+    method: 'post',
+    data: query
+  })
+}
+export function UserOrder(query) {
+  return request({
+    url: '/users/getUserOrderList',
     method: 'post',
     data: query
   })
