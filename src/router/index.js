@@ -129,6 +129,12 @@ export const asyncRouterMap = [
         name: 'gonggao',
         component: () => import('@/views/system/gonggao-list'),
         meta: { title: '公告管理', icon: 'form', roles: ['admin', 'super_editor'] }
+      },
+      {
+        path: 'jiesuan',
+        name: 'jiesuan',
+        component: () => import('@/views/system/jiesuan'),
+        meta: { title: '结算管理', icon: 'table', roles: ['admin', 'super_editor'] }
       }
     ]
   },
@@ -144,6 +150,11 @@ export const asyncRouterMap = [
         name: 'userorder',
         component: () => import('@/views/table/user-order'),
         meta: { title: '用户订单', icon: 'table', roles: ['admin', 'user'] }
+      }, {
+        path: 'userproxy',
+        name: 'userproxy',
+        component: () => import('@/views/table/user-proxy'),
+        meta: { title: '代理管理', icon: 'table', roles: ['user'] }
       }
     ]
   }

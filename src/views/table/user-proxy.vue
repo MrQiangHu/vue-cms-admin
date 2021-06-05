@@ -4,16 +4,16 @@
       <el-input v-model="listQuery.phone" placeholder="手机号查询" style="width: 200px;" class="filter-item" />
       <el-input v-model="listQuery.userid" placeholder="代理ID查询" style="width: 200px;" class="filter-item" />
       <el-input v-model="listQuery.name" placeholder="代理名称" style="width: 200px;" class="filter-item" />
-      <el-date-picker
-        v-model="listQuery.time"
-        type="daterange"
-        :picker-options="pickerOptions"
-        range-separator="至"
-        start-placeholder="开始日期"
-        end-placeholder="结束日期"
-        align="right"
-      />
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
+        <el-date-picker
+          v-model="listQuery.time"
+          type="daterange"
+          :picker-options="pickerOptions"
+          range-separator="至"
+          start-placeholder="开始日期"
+          end-placeholder="结束日期"
+          align="right"
+        />
         筛选查询
       </el-button>
       <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">
@@ -78,12 +78,6 @@
           <el-tag>{{ row.numtotal?row.numtotal:0 }}</el-tag>
         </template>
       </el-table-column>
-
-      <el-table-column label="拼多多窗口数" width="100px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.pdd_num }}</span>
-        </template>
-      </el-table-column>
       <el-table-column label="剩余点数" width="100px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.dianshu }}</span>
@@ -96,7 +90,6 @@
       </el-table-column>
       <el-table-column label="操作" align="left" min-width="230" class-name="small-padding fixed-width">
         <template slot-scope="id">
-          <el-button type="success" icon="el-icon-setting" @click="czFun(list[id.$index].id,id.$index)">充值</el-button>
           <el-button type="primary" icon="el-icon-setting" @click="handleUpdate(list[id.$index])">修改</el-button>
           <el-button type="warning" icon="el-icon-setting" @click="seting(list[id.$index].id,id.$index)">设置</el-button>
           <el-button type="danger" icon="el-icon-setting" @click="delteUser(list[id.$index].id)">删除</el-button>
@@ -127,35 +120,8 @@
             <el-option v-for="item in statusOptions" :key="item" :label="item" :value="item" />
           </el-select>
         </el-form-item>
-        <el-form-item label="是否扣点版" prop="isKoudian">
-          <el-select v-model="temp.isKoudian" class="filter-item" placeholder="请选择">
-            <el-option label="是" value="是" />
-            <el-option label="否" value="否" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="权限名称" prop="rolename">
-          <el-select v-model="temp.rolename" class="filter-item" placeholder="请选择">
-            <el-option label="普通用户权限" value="user" />
-            <el-option label="管理员权限" value="admin" />
-          </el-select>
-        </el-form-item>
         <el-form-item label="代理地址" prop="address">
           <el-input v-model="temp.address" placeholder="请输入代理的地址" />
-        </el-form-item>
-        <el-form-item label="拼多多窗口数" prop="pdd_num">
-          <el-select v-model="temp.pdd_num" placeholder="请设置是否允许连接服务器">
-            <el-option label="0" value="0" default="default" />
-            <el-option label="1" value="1" />
-            <el-option label="2" value="2" />
-            <el-option label="3" value="3" />
-            <el-option label="4" value="4" />
-            <el-option label="5" value="5" />
-            <el-option label="6" value="6" />
-            <el-option label="7" value="7" />
-            <el-option label="8" value="8" />
-            <el-option label="9" value="9" />
-            <el-option label="10" value="10" />
-          </el-select>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -183,25 +149,6 @@
           <el-select v-model="currObj.status" placeholder="请设置是否允许连接服务器">
             <el-option label="允许" value="允许" />
             <el-option label="停用" value="停用" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="拼多多窗口数" prop="pdd_num">
-          <el-select v-model="currObj.pdd_num" placeholder="请设置是否允许连接服务器">
-            <el-option label="0" value="0" />
-            <el-option label="1" value="1" />
-            <el-option label="2" value="2" />
-            <el-option label="3" value="3" />
-            <el-option label="4" value="4" />
-            <el-option label="5" value="5" />
-            <el-option label="6" value="6" />
-            <el-option label="7" value="7" />
-            <el-option label="8" value="8" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="是否扣点版" prop="isKoudian">
-          <el-select v-model="currObj.isKoudian" class="filter-item" placeholder="请选择">
-            <el-option label="是" value="是" />
-            <el-option label="否" value="否" />
           </el-select>
         </el-form-item>
       </el-form>
@@ -246,7 +193,7 @@
 </template>
 
 <script>
-import { fetchList, fetchPv, createArticle, updateStatus, deleteUser } from '@/api/article'
+import { fetchList, fetchPv, createUserProxy, updateStatus, deleteUser } from '@/api/article'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -328,7 +275,6 @@ export default {
         phone: '',
         userid: '',
         qq: '',
-        rolename: '',
         status: '允许',
         address: ''
       },
@@ -348,10 +294,7 @@ export default {
         userid: [{ required: true, message: '请生成代理ID', trigger: 'change' }, { min: 1, trigger: 'change' }],
         address: [{ required: true, message: '请输入代理地址', trigger: 'blur' }, { min: 1, trigger: 'blur' }],
         qq: [{ required: true, message: '请输入代理QQ', trigger: 'blur' }, { min: 1, trigger: 'blur' }],
-        status: [{ required: true, message: '请选择状态', trigger: 'change' }, { min: 1, trigger: 'change' }],
-        rolename: [{ required: true, message: '请输入权限名称', trigger: 'blur' }, { min: 1, trigger: 'blur' }],
-        pdd_num: [{ required: true, message: '请输入拼多多窗口数', trigger: 'blur' }, { min: 1, trigger: 'change' }],
-        isKoudian: [{ required: true, message: '请选择是否为扣点版', trigger: 'blur' }, { min: 1, trigger: 'blur' }]
+        status: [{ required: true, message: '请选择状态', trigger: 'change' }, { min: 1, trigger: 'change' }]
       },
       downloadLoading: false,
       dialogSetVisible: false,
@@ -449,9 +392,10 @@ export default {
     createData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
+          this.temp.isKoudian = '否'
           this.temp.id = parseInt(Math.random() * 100) + 1024 // mock a id
           this.temp.author = 'vue-element-admin'
-          createArticle(this.temp).then(() => {
+          createUserProxy(this.temp).then(() => {
             this.list.unshift(this.temp)
             this.dialogFormVisible = false
             this.$notify({
@@ -479,7 +423,7 @@ export default {
         if (valid) {
           const tempData = Object.assign({}, this.temp)
           tempData.timestamp = +new Date(tempData.timestamp) // change Thu Nov 30 2017 16:41:05 GMT+0800 (CST) to 1512031311464
-          deleteUser('user.update', 'updateUserInfo', tempData).then(response => {
+          deleteUser('user.update', 'updateUserInfoOfRole', tempData).then(response => {
             if (response.code === 0) {
               this.dialogFormVisible = false
               this.$message({

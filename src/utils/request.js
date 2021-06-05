@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2020-04-29 14:03:57
- * @LastEditTime: 2021-05-23 19:15:27
+ * @LastEditTime: 2021-06-05 17:29:52
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \vue-cms-admin\src\utils\request.js
@@ -14,8 +14,8 @@ axios.defaults.withCredentials = true
 // create an axios instance
 const service = axios.create({
   // baseURL: 'http://localhost:8080',
-  // baseURL: 'http://49.234.208.155:8080', // url = base url + request url
-  baseURL: 'http://118.195.175.32:8080',
+  baseURL: 'http://49.234.208.155:8080', // url = base url + request url
+  // baseURL: 'http://118.195.175.32:8080',
   // withCredentials: true, // send cookies when cross-domain requests
   timeout: 30000 // request timeout
 })

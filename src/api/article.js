@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-04-08 03:42:13
- * @LastEditTime: 2021-05-21 20:29:50
+ * @LastEditTime: 2021-05-31 03:39:28
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \vue-cms-admin\src\api\article.js
@@ -32,6 +32,14 @@ export function tjbList(query) {
 export function OrderList(query) {
   return request({
     url: '/users/getOrderList',
+    method: 'post',
+    data: query
+  })
+}
+
+export function getWuliu(query) {
+  return request({
+    url: '/users/getWuliu',
     method: 'post',
     data: query
   })
@@ -111,6 +119,19 @@ export function createArticle(params) {
   postdata.param = params
   postdata.servicepackage = 'user.install'
   postdata.servicename = 'addPorxy'
+  // 根据ID修改对应状态
+  return request({
+    url: '/breeze/doServer',
+    method: 'post',
+    data: postdata
+  })
+}
+
+export function createUserProxy(params) {
+  const postdata = {}
+  postdata.param = params
+  postdata.servicepackage = 'user.install'
+  postdata.servicename = 'addUserPorxy'
   // 根据ID修改对应状态
   return request({
     url: '/breeze/doServer',
